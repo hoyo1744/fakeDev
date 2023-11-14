@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -85,6 +86,7 @@ public class PostApiController {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     static class CreatePostRequestDto {
         @NotEmpty
         @NotNull
@@ -95,10 +97,13 @@ public class PostApiController {
         private String content;
 
 
+
+
     }
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     static class UpdatePostRequestDto {
         @NotEmpty
         @NotNull
