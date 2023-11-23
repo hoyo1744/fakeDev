@@ -7,13 +7,17 @@ spring:
       hibernate:
 #        show_sql: true
         format_sql: true
-
+  messages:
+    basename: messages,errors
 logging:
   level:
     org.hibernate.sql: trace
     org.hibernate.type.descriptor.sql: trace
     org.hibernate.orm.jdbc.bind: trace
     org.hibernate.orm.extract: trace
+
+
+
 
 
 

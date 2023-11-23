@@ -1,27 +1,21 @@
 package com.example.board.api.post;
 
 import com.example.board.domain.Post;
+import com.example.board.dto.post.CreatePostRequestDto;
 import com.example.board.exception.UserException;
 import com.example.board.service.PostService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.extern.slf4j.XSlf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -40,12 +34,7 @@ public class PostApiController {
      * @return
      */
     @PostMapping("/api/post")
-    public CreatePostResponseDto savePost(@RequestBody @Valid CreatePostRequestDto requestSavePost, BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            List<ObjectError> allErrors = bindingResult.getAllErrors();
-            allErrors.stream().forEach( o -> log.info(o.getDefaultMessage()));
-        }
+    public CreatePostResponseDto savePost(@RequestBody @Valid CreatePostRequestDto requestSavePost) {
 
         Post post = new Post(requestSavePost.getTitle(), requestSavePost.getContent());
         Long savePostId = postService.save(post);
@@ -117,33 +106,16 @@ public class PostApiController {
     }
 
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    static class CreatePostRequestDto {
-        @NotEmpty
-        @NotNull
-        private String title;
 
-        @NotEmpty
-        @NotNull
-        private String content;
-
-
-
-
-    }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     static class UpdatePostRequestDto {
-        @NotEmpty
-        @NotNull
+        @NotBlank
         private String title;
 
-        @NotEmpty
-        @NotNull
+        @NotBlank
         private String content;
     }
 
@@ -151,12 +123,10 @@ public class PostApiController {
     @AllArgsConstructor
     static class CreatePostResponseDto {
         private Long id;
-        @NotEmpty
-        @NotNull
+        @NotBlank
         private String title;
 
-        @NotEmpty
-        @NotNull
+        @NotBlank
         private String content;
     }
 
@@ -165,12 +135,10 @@ public class PostApiController {
     static class UpdatePostResponseDto {
         private Long id;
 
-        @NotEmpty
-        @NotNull
+        @NotBlank
         private String title;
 
-        @NotEmpty
-        @NotNull
+        @NotBlank
         private String content;
     }
 

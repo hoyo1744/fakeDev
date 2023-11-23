@@ -1,6 +1,6 @@
 package com.example.board.api.post;
 
-import com.example.board.domain.Post;
+import com.example.board.dto.post.CreatePostRequestDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static com.example.board.api.post.PostApiController.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional

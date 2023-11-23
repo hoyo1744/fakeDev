@@ -9,6 +9,9 @@ spring:
 #        stdout으로 로깅
         show_sql: true
         format_sql: true
+  messages:
+    basename: errors
+
 
 logging.level:
   org.hibernate.sql: debug
