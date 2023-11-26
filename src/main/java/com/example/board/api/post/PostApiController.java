@@ -1,8 +1,9 @@
 package com.example.board.api.post;
 
 import com.example.board.domain.Post;
+import com.example.board.dto.CommonErrorCode;
 import com.example.board.dto.post.CreatePostRequestDto;
-import com.example.board.exception.UserException;
+import com.example.board.exception.RestApiException;
 import com.example.board.service.PostService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -90,7 +91,7 @@ public class PostApiController {
             throw new IllegalArgumentException("잘못된 입력 값");
         }
         if (id.equals("user-ex")) {
-            throw new UserException("사용자 오류");
+            throw new RestApiException(CommonErrorCode.INVALID_PARAMETER);
         }
 
         return new PostDto(Long.parseLong(id), "title", "content");

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-//@NoArgsConstructor
+@NoArgsConstructor
 public class CreatePostRequestDto {
     @NotBlank
     private String title;
