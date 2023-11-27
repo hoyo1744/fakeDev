@@ -6,10 +6,14 @@ import com.example.board.dto.ErrorResponse;
 import com.example.board.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,7 +21,11 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.example.board.dto.ErrorResponse.*;
 
 
 // 일단 springMVC오류잖아? 이걸 커스텀하고싶은거지?
@@ -29,70 +37,31 @@ import java.util.stream.Collectors;
 // 잡아주긴하는데 Default에서 잡는게 아니라 ExceptionHandlerExceptionResolver 여기에서 잡는구나. 그렇다면 내가 커스텀하길 원하는 부분만 로깅하면 될듯?
 // 근데 그러면 일관성이 없잖아
 // 아 일관성을 잡는 방법이 있다. Json response에서 구조를 짜고 나머지 두분에 data를 넣어서 공통화하면되겠다.
-//
+// 나머지 스프링 예외도 모두 잡아야겠다.
 @Slf4j
 @RestControllerAdvice(basePackages = "com.example.board.api")
 @RequiredArgsConstructor
 public class GlobalExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
+    private final MessageSource messageSource;
 
-    @ExceptionHandler(RestApiException.class)
-    public ResponseEntity<Object> handleRestApiException(RestApiException e) {
-        log.error("[handleRestApiException]", e);
-        ErrorCode errorCode = e.getErrorCode();
-        return handleExceptionInternal(errorCode);
-    }
-
-    @ExceptionHandler({Exception.class})
-    public ResponseEntity<Object> handleAllException(Exception e) {
-        log.error("[handleAllException]", e);
-        ErrorCode errorCode = CommonErrorCode.INTERNAL_SERVER_ERROR;
-        return handleExceptionInternal(errorCode);
-    }
-    
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<Object> handleMehtodArgumentNotValidException(MethodArgumentNotValidException e) {
-//        log.error("[handleMehtodArgumentNotValidException]", e);
+//    @ExceptionHandler(RestApiException.class)
+//    public ResponseEntity<Object> handleRestApiException(RestApiException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 //
-//        ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
-//        return handleExceptionInternal(errorCode, e);
+//
+//
 //    }
 
-    private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode, BindException e) {
-        return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(makeErrorResponse(errorCode, e));
-    }
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
-    private ResponseEntity<Object> handleExceptionInternal(ErrorCode errorCode) {
-        return ResponseEntity.status(errorCode.getHttpStatus())
-                .body(makeErrorResponse(errorCode));
-    }
-
-    private ErrorResponse makeErrorResponse(ErrorCode errorCode, BindException e) {
-        List<ErrorResponse.ValidationError> validationErrors = e.getBindingResult()
-                .getFieldErrors()
+        List<ValidationError> errors = ex.getBindingResult().getFieldErrors()
                 .stream()
-                .map(ErrorResponse.ValidationError::of)
-                .collect(Collectors.toList());
+                .map(c -> ValidationError.of(messageSource, c)).filter(Objects::nonNull).collect(Collectors.toList());
+        CommonErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
+        ErrorResponse errorResponse = new ErrorResponse(errorCode.getHttpStatus().value(), errorCode.getHttpStatus(), errorCode.getMessage(), errors);
 
-        return ErrorResponse.builder()
-                .code(errorCode.name())
-                .message(errorCode.getMessage())
-                .errors(validationErrors)
-                .build();
+        return handleExceptionInternal(ex, errorResponse, headers, status, request);
     }
 
-    private ErrorResponse makeErrorResponse(ErrorCode code) {
-        return ErrorResponse.builder()
-                .code(code.name())
-                .message(code.getMessage())
-                .build();
-    }
-
-    private ErrorResponse makeErrorResponse(String code, String msg) {
-        return ErrorResponse.builder()
-                .code(code)
-                .message(msg)
-                .build();
-    }
 }

@@ -2,7 +2,7 @@ package com.example.board.api.post;
 
 import com.example.board.domain.Post;
 import com.example.board.dto.CommonErrorCode;
-import com.example.board.dto.post.CreatePostRequestDto;
+import com.example.board.dto.post.*;
 import com.example.board.exception.RestApiException;
 import com.example.board.service.PostService;
 import jakarta.validation.Valid;
@@ -98,49 +98,5 @@ public class PostApiController {
     }
 
 
-    @Data
-    @AllArgsConstructor
-    static class PostDto {
-        private Long id;
-        private String title;
-        private String content;
-    }
-
-
-
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    static class UpdatePostRequestDto {
-        @NotBlank
-        private String title;
-
-        @NotBlank
-        private String content;
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class CreatePostResponseDto {
-        private Long id;
-        @NotBlank
-        private String title;
-
-        @NotBlank
-        private String content;
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class UpdatePostResponseDto {
-        private Long id;
-
-        @NotBlank
-        private String title;
-
-        @NotBlank
-        private String content;
-    }
 
 }
