@@ -47,7 +47,7 @@ public class BeanValidation {
         ValidatorFactory validation = Validation.buildDefaultValidatorFactory();
         Validator validator = validation.getValidator();
 
-        Post post = new Post("", "");
+        Post post = new Post();
 
         //when
         Set<ConstraintViolation<Post>> validate = validator.validate(post);

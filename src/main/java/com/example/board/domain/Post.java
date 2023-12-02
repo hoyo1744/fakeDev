@@ -1,18 +1,13 @@
 package com.example.board.domain;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString(of = {"id","title","content"})
 public class Post {
 
     @Id
@@ -26,12 +21,31 @@ public class Post {
     @NotEmpty
     private String content;
 
-    public Post(String title, String content) {
-        this.title = title;
-        this.content = content;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID")
+    private User user;
+
+    public Post() {
     }
+
     public void changePostData(String title, String content) {
         this.title = title;
         this.content = content;
     }
+
+
+    /**
+     * 연관관계 편의 메서드(양방향 관계 모두 설정)
+     */
+    public void setAuthor(User user) {
+
+        if (this.user != null) {
+            this.user.getPosts().remove(this);
+        }
+
+        this.user = user;
+        user.getPosts().add(this);
+    }
+
+
 }

@@ -1,7 +1,10 @@
 package com.example.board.api.post;
 
-import com.example.board.dto.post.CreatePostRequestDto;
+import com.example.board.domain.User;
+import com.example.board.dto.post.*;
+import com.example.board.repository.UserRepository;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.example.board.api.post.PostApiController.*;
 
 @SpringBootTest
 @Transactional
@@ -19,11 +21,22 @@ class PostApiControllerTest {
     @Autowired
     PostApiController postApiController;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @BeforeEach
+    public void init() {
+        User user = new User();
+        user.changeAuthorData("hoyong.eom");
+
+        userRepository.save(user);
+    }
+
     @Test
     @DisplayName("게시글 저장 테스트")
     public void savePost() throws Exception {
         //given
-        CreatePostRequestDto createPostRequestDto = new CreatePostRequestDto("title", "content");
+        CreatePostRequestDto createPostRequestDto = new CreatePostRequestDto("title", "content", 1L);
 
         //when
         CreatePostResponseDto createPostResponseDto = postApiController.savePost(createPostRequestDto);
@@ -38,7 +51,7 @@ class PostApiControllerTest {
     @DisplayName("게시글 수정 테스트")
     public void updatePost() throws Exception {
         //given
-        CreatePostRequestDto createPostRequestDto = new CreatePostRequestDto("title", "content");
+        CreatePostRequestDto createPostRequestDto = new CreatePostRequestDto("title", "content", 1L);
         CreatePostResponseDto createPostResponseDto = postApiController.savePost(createPostRequestDto);
 
         //when
@@ -55,7 +68,7 @@ class PostApiControllerTest {
     @DisplayName("게시글 조회 테스트")
     public void getPost() throws Exception {
         //given
-        CreatePostRequestDto createPostRequestDto = new CreatePostRequestDto("title", "content");
+        CreatePostRequestDto createPostRequestDto = new CreatePostRequestDto("title", "content", 1L);
         CreatePostResponseDto createPostResponseDto = postApiController.savePost(createPostRequestDto);
 
         //when
@@ -69,7 +82,7 @@ class PostApiControllerTest {
     @DisplayName("게시글 삭제 테스트")
     public void delete() throws Exception {
         //given
-        CreatePostRequestDto createPostRequestDto = new CreatePostRequestDto("title", "content");
+        CreatePostRequestDto createPostRequestDto = new CreatePostRequestDto("title", "content", 1L);
         CreatePostResponseDto createPostResponseDto = postApiController.savePost(createPostRequestDto);
 
         //when

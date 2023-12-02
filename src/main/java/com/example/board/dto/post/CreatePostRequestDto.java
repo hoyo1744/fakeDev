@@ -11,9 +11,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreatePostRequestDto {
-    @NotBlank
+    @NotEmpty
     private String title;
 
-    @NotBlank
+    @NotEmpty
     private String content;
+
+    @NotEmpty
+    private Long userId;
 }

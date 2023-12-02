@@ -3,6 +3,7 @@ package com.example.board.exhandler.advice;
 import com.example.board.dto.CommonErrorCode;
 import com.example.board.dto.ErrorCode;
 import com.example.board.dto.ErrorResponse;
+import com.example.board.dto.UserErrorCode;
 import com.example.board.exception.RestApiException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,18 +40,20 @@ import static com.example.board.dto.ErrorResponse.*;
 // 아 일관성을 잡는 방법이 있다. Json response에서 구조를 짜고 나머지 두분에 data를 넣어서 공통화하면되겠다.
 // 나머지 스프링 예외도 모두 잡아야겠다.
 @Slf4j
-@RestControllerAdvice(basePackages = "com.example.board.api")
+@RestControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionControllerAdvice extends ResponseEntityExceptionHandler {
 
     private final MessageSource messageSource;
 
-//    @ExceptionHandler(RestApiException.class)
-//    public ResponseEntity<Object> handleRestApiException(RestApiException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-//
-//
-//
-//    }
+    @ExceptionHandler(RestApiException.class)
+    public ResponseEntity<Object> handleRestApiException(RestApiException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+        UserErrorCode errorCode = (UserErrorCode) ex.getErrorCode();
+        ErrorResponse errorResponse = new ErrorResponse(errorCode.getHttpStatus().value(), errorCode.getHttpStatus(), errorCode.getMessage(), null);
+        return handleExceptionInternal(ex, errorResponse, headers, status, request);
+    }
+
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {

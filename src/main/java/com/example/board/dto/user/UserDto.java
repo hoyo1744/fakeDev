@@ -1,4 +1,4 @@
-package com.example.board.dto.post;
+package com.example.board.dto.user;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -6,13 +6,11 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class PostDto {
+public class UserDto {
+
     @NotEmpty
     private Long id;
+
     @NotEmpty
-    private String title;
-    @NotEmpty
-    private String content;
-    @NotEmpty
-    private String userName;
+    private String name;
 }

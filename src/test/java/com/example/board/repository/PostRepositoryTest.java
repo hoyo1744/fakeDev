@@ -1,6 +1,6 @@
 package com.example.board.repository;
 
-import com.example.board.api.post.PostApiController;
+import com.example.board.domain.User;
 import com.example.board.domain.Post;
 import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
@@ -12,8 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 @Transactional
 class PostRepositoryTest {
@@ -22,12 +20,16 @@ class PostRepositoryTest {
     PostRepository postRepository;
 
     @Autowired
+    UserRepository authorRepository;
+
+    @Autowired
     EntityManager em;
 
     @Test
     @DisplayName("PostRepository save 기본 테스트")
     public void save() throws Exception {
-        Post post = new Post("title", "content");
+        Post post = new Post();
+        post.changePostData("title", "content");
         Post save = postRepository.save(post);
         Assertions.assertThat(post.getId()).isEqualTo(save.getId());
     }
@@ -36,7 +38,8 @@ class PostRepositoryTest {
     @Test
     @DisplayName("PostRepository find 기본 테스트")
     public void findById() throws Exception {
-        Post post = new Post("title", "content");
+        Post post = new Post();
+        post.changePostData("title", "content");
         Post save = postRepository.save(post);
 
         em.flush();
@@ -46,5 +49,24 @@ class PostRepositoryTest {
 
         Assertions.assertThat(post.getId()).isEqualTo(findPost.get().getId());
 
+    }
+
+
+    @Test
+    @DisplayName("PostRepository 연관관계 매핑 테스트")
+    public void findByIdRelationShipTest() throws Exception {
+        Post post = new Post();
+        post.changePostData("title", "content");
+
+        User author = new User();
+        author.changeAuthorData("hoyong.eom");
+        User saveAuthor = authorRepository.save(author);
+
+        post.setAuthor(saveAuthor);
+        Post savePost = postRepository.save(post);
+
+        Assertions.assertThat(savePost.getId()).isEqualTo(post.getId());
+        Assertions.assertThat(saveAuthor.getId()).isEqualTo(savePost.getUser().getId());
+        Assertions.assertThat(saveAuthor.getName()).isEqualTo(savePost.getUser().getName());
     }
 }

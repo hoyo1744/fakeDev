@@ -1,18 +1,11 @@
 package com.example.board.api.post;
 
 import com.example.board.domain.Post;
-import com.example.board.dto.CommonErrorCode;
 import com.example.board.dto.post.*;
-import com.example.board.exception.RestApiException;
 import com.example.board.service.PostService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,10 +29,8 @@ public class PostApiController {
      */
     @PostMapping("/api/post")
     public CreatePostResponseDto savePost(@RequestBody @Valid CreatePostRequestDto requestSavePost) {
-
-        Post post = new Post(requestSavePost.getTitle(), requestSavePost.getContent());
-        Long savePostId = postService.save(post);
-        return new CreatePostResponseDto(savePostId, post.getTitle(), post.getContent());
+        Long savePostId = postService.save(requestSavePost.getTitle(), requestSavePost.getContent(), requestSavePost.getUserId());
+        return new CreatePostResponseDto(savePostId, requestSavePost.getTitle(), requestSavePost.getContent(), requestSavePost.getUserId());
     }
 
     /**
@@ -47,7 +38,7 @@ public class PostApiController {
      */
     @PutMapping("/api/post/{id}")
     public UpdatePostResponseDto updatePost(@PathVariable Long id, @RequestBody @Valid UpdatePostRequestDto requestUpdatePost) {
-        Long updateId = postService.update(id, requestUpdatePost.getTitle(), requestUpdatePost.getContent());
+        Long updateId = postService.updateOne(id, requestUpdatePost.getTitle(), requestUpdatePost.getContent());
         return new UpdatePostResponseDto(updateId, requestUpdatePost.getTitle(), requestUpdatePost.getContent());
     }
 
@@ -57,7 +48,7 @@ public class PostApiController {
     @GetMapping("/api/post/{id}")
     public PostDto getPost(@PathVariable("id") Long id) {
         Post findPost = postService.findOne(id).get();
-        return new PostDto(findPost.getId(), findPost.getTitle(), findPost.getContent());
+        return new PostDto(findPost.getId(), findPost.getTitle(), findPost.getContent(), findPost.getUser().getName());
     }
 
     /**
@@ -74,29 +65,6 @@ public class PostApiController {
     @GetMapping("/api/posts")
     public List<PostDto> getPosts() {
         List<Post> posts = postService.findAll();
-        return posts.stream().map(post -> new PostDto(post.getId(), post.getTitle(), post.getContent())).collect(toList());
+        return posts.stream().map(post -> new PostDto(post.getId(), post.getTitle(), post.getContent(), post.getUser().getName())).collect(toList());
     }
-
-
-    /**
-     * 에러 체크용
-     */
-    @Profile(value = "test")
-    @GetMapping("/api/exception/{id}")
-    public PostDto getException(@PathVariable("id") String id) {
-        if (id.equals("ex")) {
-            throw new RuntimeException("잘못된 사용자");
-        }
-        if (id.equals("bad")) {
-            throw new IllegalArgumentException("잘못된 입력 값");
-        }
-        if (id.equals("user-ex")) {
-            throw new RestApiException(CommonErrorCode.INVALID_PARAMETER);
-        }
-
-        return new PostDto(Long.parseLong(id), "title", "content");
-    }
-
-
-
 }

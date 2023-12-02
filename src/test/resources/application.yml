@@ -1,4 +1,5 @@
 
+
 spring:
   jpa:
     hibernate:
@@ -11,6 +12,8 @@ spring:
         format_sql: true
   messages:
     basename: errors
+  profiles:
+    active: "test"
 
 
 logging.level:
