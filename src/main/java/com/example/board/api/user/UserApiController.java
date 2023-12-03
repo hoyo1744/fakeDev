@@ -30,8 +30,8 @@ public class UserApiController {
      */
     @PostMapping("/api/user")
     public CreateUserResponseDto joinUser(@RequestBody @Valid CreateUserRequestDto createJoinUser) {
-        userService.join(createJoinUser.getName());
-        return new CreateUserResponseDto(createJoinUser.getName());
+        Long joinId = userService.join(createJoinUser.getName());
+        return new CreateUserResponseDto(joinId, createJoinUser.getName());
     }
 
     /**

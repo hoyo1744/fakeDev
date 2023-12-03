@@ -1,4 +1,4 @@
-package com.example.board.dto.user;
+package com.example.board.dto;
 
 import com.example.board.dto.ErrorCode;
 import lombok.Getter;
